@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class LevelGenerator : MonoBehaviour
@@ -9,7 +10,7 @@ public class LevelGenerator : MonoBehaviour
     public int initialGroundTiles = 10;
     public float tileWidth = 3f;
 
-    public float obstacleSpawnChance = 0.15f; // chance inicial
+    public float obstacleSpawnChance = 0.15f;
     public float obstacleSpawnIncreaseRate = 0.01f;
     public float maxObstacleSpawnChance = 0.4f;
 
@@ -19,36 +20,48 @@ public class LevelGenerator : MonoBehaviour
 
     public Transform player;
 
-    public float speed = 5f;               // velocidad inicial
+    public float speed = 5f;
     public float speedIncreaseRate = 0.1f;
     public float maxSpeed = 12f;
 
     private float nextSpawnX = 0f;
     private List<GameObject> spawnedTiles = new List<GameObject>();
 
+    private int tilesSpawned = 0;
+    private bool canSpawnObstacles = false;
+
     void Start()
     {
+        StartCoroutine(InitialSpawn());
+    }
+
+    IEnumerator InitialSpawn()
+    {
+        // Generar los primeros tiles sin obstáculos
         for (int i = 0; i < initialGroundTiles; i++)
         {
-            SpawnGroundTile();
+            SpawnGroundTile(false);
         }
+
+        // Esperar 1 segundo antes de permitir spawn de obstáculos
+        yield return new WaitForSeconds(1f);
+        canSpawnObstacles = true;
     }
 
     void Update()
     {
-        // Incrementar velocidad y probabilidad de obstáculo con el tiempo
         speed = Mathf.Min(maxSpeed, speed + speedIncreaseRate * Time.deltaTime);
         obstacleSpawnChance = Mathf.Min(maxObstacleSpawnChance, obstacleSpawnChance + obstacleSpawnIncreaseRate * Time.deltaTime);
 
         if (Camera.main.transform.position.x + 10f > nextSpawnX - (initialGroundTiles * tileWidth))
         {
-            SpawnGroundTile();
+            SpawnGroundTile(canSpawnObstacles);
         }
 
         RemoveOldTiles();
     }
 
-    void SpawnGroundTile()
+    void SpawnGroundTile(bool spawnObstacles)
     {
         GameObject tile = Instantiate(
             groundTilePrefab,
@@ -56,8 +69,9 @@ public class LevelGenerator : MonoBehaviour
             Quaternion.identity
         );
         spawnedTiles.Add(tile);
+        tilesSpawned++;
 
-        if (Random.value < obstacleSpawnChance)
+        if (spawnObstacles && Random.value < obstacleSpawnChance)
         {
             float randomOffset = Random.Range(-tileWidth / 2f + 0.5f, tileWidth / 2f - 0.5f);
             Vector3 obstaclePos = new Vector3(nextSpawnX + randomOffset, obstacleHeight, 0);

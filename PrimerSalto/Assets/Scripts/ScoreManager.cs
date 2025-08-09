@@ -1,37 +1,31 @@
 using UnityEngine;
-using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
     public Transform player;
-    public TMP_Text scoreText;
-    public TMP_Text highScoreText;
+    private int highScore;
 
-    private float score = 0f;
-    private int highScore = 0;
+    private UIManager uiManager;
+
+    private int score = 0;
 
     void Start()
     {
+        uiManager = FindObjectOfType<UIManager>();
         highScore = PlayerPrefs.GetInt("HighScore", 0);
-        UpdateHighScoreText();
     }
 
     void Update()
     {
-        score = player.position.x;
-        scoreText.text = "Score: " + Mathf.FloorToInt(score).ToString();
+        int currentScore = Mathf.FloorToInt(player.position.x);
 
-        if (score > highScore)
+        if (currentScore > highScore)
         {
-            highScore = Mathf.FloorToInt(score);
+            highScore = currentScore;
             PlayerPrefs.SetInt("HighScore", highScore);
-            UpdateHighScoreText();
         }
-    }
 
-    void UpdateHighScoreText()
-    {
-        if (highScoreText != null)
-            highScoreText.text = "High Score: " + highScore.ToString();
+        if (uiManager != null)
+            uiManager.UpdateScore(currentScore);
     }
 }

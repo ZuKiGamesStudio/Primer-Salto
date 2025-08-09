@@ -52,9 +52,14 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Obstacle"))
         {
-            // Reiniciar la escena actual
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+            UIManager uiManager = FindObjectOfType<UIManager>();
+            if (uiManager != null)
+            {
+                uiManager.ShowGameOver(
+                    Mathf.FloorToInt(transform.position.x),
+                    PlayerPrefs.GetInt("HighScore", 0)
+                );
+            }
         }
     }
-
 }
