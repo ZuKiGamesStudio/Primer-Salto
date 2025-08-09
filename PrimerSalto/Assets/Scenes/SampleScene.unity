@@ -367,7 +367,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -458,8 +458,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc426e342c4a40c449fbde779ecc2fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 10
-  speed: 5
+  jumpForce: 14
+  levelGenerator: {fileID: 1829631997}
 --- !u!1 &1829631996
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,10 +494,15 @@ MonoBehaviour:
   initialGroundTiles: 10
   tileWidth: 3
   obstacleSpawnChance: 0.2
+  obstacleSpawnIncreaseRate: 0.01
+  maxObstacleSpawnChance: 1.4
   groundY: -5
   obstacleHeight: -4.2
   maxTileDistance: 30
   player: {fileID: 1597253742}
+  speed: 5
+  speedIncreaseRate: 0.1
+  maxSpeed: 12
 --- !u!4 &1829631998
 Transform:
   m_ObjectHideFlags: 0

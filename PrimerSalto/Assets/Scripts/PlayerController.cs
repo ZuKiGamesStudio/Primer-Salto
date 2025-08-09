@@ -1,46 +1,60 @@
 using UnityEngine;
-
-// Controlador del jugador que permite saltar y moverse horizontalmente
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    public float jumpForce = 10f; //Fuerza del salto
-    private Rigidbody2D rb; // Referencia al Rigidbody2D del jugador
-    private bool isGrounded; // Indica si el jugador esta en el suelo
-    public float speed = 5f; // Velocidad de movimiento del jugador
+    public float jumpForce = 10f;
+    private Rigidbody2D rb;
+    private bool isGrounded;
+    public LevelGenerator levelGenerator;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); // Obtener el componente Rigidbody2D
+        rb = GetComponent<Rigidbody2D>();
     }
-    
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded) // Si se presiona la barra espaciadora y el jugador esta en el suelo
+        if (Input.GetKeyDown(KeyCode.E) && isGrounded)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Aplicar fuerza de salto
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+
+        if (Input.GetKey(KeyCode.Q) && !isGrounded)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -jumpForce * 2); // bajada rápida
         }
     }
+
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector2(speed, rb.velocity.y); // Mover al jugador horizontalmente a una velocidad constante
+        rb.velocity = new Vector2(levelGenerator.speed, rb.velocity.y);
     }
 
-    // Deteccion de colisiones
-    private void OnCollisionEnter2D(Collision2D collision) // Detectar colision con el suelo
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) // Si el objeto con el que colisiona tiene la etiqueta "Ground"
+        if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = true; // El jugador esta en el suelo
+            isGrounded = true;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision) // Detectar cuando el jugador deja de colisionar con el suelo
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) // Si el objeto con el que deja de colisionar tiene la etiqueta "Ground"
+        if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = false; // El jugador ya no esta en el suelo
+            isGrounded = false;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Obstacle"))
+        {
+            // Reiniciar la escena actual
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
 }
